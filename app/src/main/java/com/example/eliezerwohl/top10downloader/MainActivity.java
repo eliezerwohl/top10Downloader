@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -21,10 +22,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Log.d(TAG, "On create: starting aysnc");
         DownloadData downloadData = new DownloadData();
-        downloadData.execute("URL goes here");
+        downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=10/xml");
         Log.d(TAG, "on create: done");
     }
     private class DownloadData extends AsyncTask<String, Void, String> {
@@ -47,16 +47,39 @@ public class MainActivity extends AppCompatActivity {
         private String downloadXML(String urlPath){
             StringBuilder xmlResult = new StringBuilder();
             try {
-                URl url = new URL(urlPath);
+                URL url = new URL(urlPath);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                int response = connnection.getResponseCode();
-                Log.d(TAG, "downloadXML: the response code was " + response);
-                InputStream inputStream = connection.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader reader = new BufferedReader(inputStreamReader);
+               int response = connection.getResponseCode();
+           Log.d(TAG, "downloadXML: the response code was " + response);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//                InputStream inputStream = connection.getInputStream();
+//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+//                BufferedReader reader = new BufferedReader(inputStreamReader);
+                int charsRead;
+                char[] inputBuffer =new char[500];
+                while(true){
+                    charsRead = reader.read(inputBuffer);
+                    if (charsRead < 0){
+                        break;
+                    }
+                    if (charsRead > 0){
+                        xmlResult.append(String.copyValueOf(inputBuffer, 0, charsRead));
+                    }
+                }
+                reader.close();
+                return xmlResult.toString();
             }catch (MalformedURLException e){
                 Log.e(TAG, "DOWNLOAD XML: INvalid URL" + e.getMessage());
             }
+            catch(IOException e) {
+                Log.e(TAG, "DOWNLOAD XML: IO Exepction reading data" + e.getMessage());
+            }
+            catch (SecurityException e){
+                Log.e(TAG, "DOWNLOAD XML: security exception, need permission" + e.getMessage());
+                e.printStackTrace();
+            }
+
+            return null;
         }
 
     }
