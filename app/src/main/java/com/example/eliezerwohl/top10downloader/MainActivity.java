@@ -27,20 +27,19 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt("DATA_LIMIT", feedLimit);
         super.onSaveInstanceState(outState);
     }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        feedUrl = savedInstanceState.getString("DATA_URL");
-        feedLimit = savedInstanceState.getInt("DATA_LIMIT");
-        downloadUrl(String.format(feedUrl, feedLimit));
-    }
+     
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listApps = (ListView) findViewById(R.id.XmlListView);
+        if (savedInstanceState != null){
+            feedUrl = savedInstanceState.getString("DATA_URL");
+            feedLimit = savedInstanceState.getInt("DATA_LIMIT");
+            downloadUrl(String.format(feedUrl, feedLimit));
+
+        }
         // downloadUrl("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=10/xml");
         downloadUrl(String.format(feedUrl, feedLimit));
 
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (currentId == id) {
+        if (currentId == id && currentId != R.id.refresh) {
             Log.d(TAG, "nothing");
             return true;
         } else {
@@ -80,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.mnuSongs:
                     feedUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topsongs/limit=%d/xml";
+                    break;
+                case R.id.refresh:
                     break;
                 case R.id.mnu10:
                 case R.id.mnu25:
