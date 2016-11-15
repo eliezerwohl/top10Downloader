@@ -50,14 +50,13 @@ public class FeedEntry {
     public void setSummary(String summary) {
         this.summary = summary;
     }
-
-    @Override
-    public String toString() {
-        return
-                "name=" + name + '\n' +
-                ", artist=" + artist + '\n' +
-                ", releaseDate=" + releaseDate + '\n' +
-                ", imgURL=" + imgURL + '\n';
-
-    }
+//    @Override
+//    public String toString() {
+//        return
+//                "name=" + name + '\n' +
+//                ", artist=" + artist + '\n' +
+//                ", releaseDate=" + releaseDate + '\n' +
+//                ", imgURL=" + imgURL + '\n';
+//
+//    }
 }
